@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkillLink Rwanda — Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#12213C;
+    --ink-soft:#2A3B5C;
+    --paper:#EEF0F2;
+    --paper-alt:#FFFFFF;
+    --gold:#C99A2E;
+    --gold-soft:#F1E3BE;
+    --teal:#1F6F78;
+    --teal-soft:#D7E9E9;
+    --coral:#D65A31;
+    --line: rgba(18,33,60,0.13);
+    --shadow: 0 8px 24px rgba(18,33,60,0.08);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+
+  .app{max-width:1180px;margin:0 auto;padding:28px 24px 80px;}
+
+  /* ---------- HEADER ---------- */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding-bottom:22px;border-bottom:1px solid var(--line);
+    margin-bottom:8px;
+  }
+  .brand{display:flex;align-items:center;gap:12px;}
+  .seal{
+    width:40px;height:40px;border-radius:50%;
+    background:var(--ink);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--gold-soft);font-family:'Fraunces',serif;font-weight:600;font-size:16px;
+    flex:none;
+  }
+  .brand-text .name{font-family:'Fraunces',serif;font-weight:600;font-size:20px;letter-spacing:0.2px;}
+  .brand-text .tag{font-size:11.5px;color:var(--ink-soft);letter-spacing:0.4px;text-transform:uppercase;font-weight:500;}
+
+  .tabs{display:flex;gap:4px;background:var(--paper-alt);padding:4px;border-radius:10px;border:1px solid var(--line);}
+  .tab-btn{
+    border:none;background:transparent;padding:9px 16px;border-radius:7px;
+    font-family:'IBM Plex Sans',sans-serif;font-size:13.5px;font-weight:600;color:var(--ink-soft);
+    cursor:pointer;transition:background .18s ease, color .18s ease;
+  }
+  .tab-btn.active{background:var(--ink);color:var(--paper);}
+  .tab-btn:not(.active):hover{background:var(--paper);}
+
+  /* ---------- HERO / VIEW HEADER ---------- */
+  .view-head{padding:34px 0 26px;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--teal);
+    letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px;
+  }
+  .eyebrow::before{content:"";width:16px;height:1px;background:var(--teal);display:inline-block;}
+  .view-head h1{
+    font-family:'Fraunces',serif;font-weight:600;font-size:clamp(28px,4vw,42px);
+    margin:0 0 10px;letter-spacing:-0.3px;line-height:1.08;
+  }
+  .view-head p{max-width:560px;color:var(--ink-soft);font-size:15px;line-height:1.55;margin:0;}
+
+  .panel{display:none;}
+  .panel.active{display:block;animation:fadeUp .45s ease both;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+  /* ===================== STUDENT VIEW ===================== */
+  .student-grid{display:grid;grid-template-columns:300px 1fr;gap:24px;align-items:start;}
+  @media (max-width:820px){.student-grid{grid-template-columns:1fr;}}
+
+  .card{
+    background:var(--paper-alt);border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--shadow);
+  }
+  .profile-card{padding:26px 22px;}
+  .avatar{
+    width:64px;height:64px;border-radius:50%;
+    background:linear-gradient(135deg,var(--teal),var(--ink));
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    font-family:'Fraunces',serif;font-size:22px;font-weight:600;margin-bottom:14px;
+  }
+  .profile-card h2{font-family:'Fraunces',serif;font-size:20px;margin:0 0 3px;font-weight:600;}
+  .profile-card .role{font-size:13px;color:var(--ink-soft);margin-bottom:16px;}
+  .meta-row{display:flex;justify-content:space-between;font-size:12.5px;padding:8px 0;border-top:1px solid var(--line);}
+  .meta-row span:first-child{color:var(--ink-soft);}
+  .meta-row span:last-child{font-weight:600;}
+
+  .passport-toggle{
+    margin-top:18px;padding:14px;background:var(--teal-soft);border-radius:10px;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+  }
+  .passport-toggle .label{font-size:12.5px;line-height:1.4;color:var(--ink);}
+  .passport-toggle .label b{display:block;font-size:13px;margin-bottom:2px;}
+  .switch{
+    width:42px;height:24px;border-radius:20px;background:var(--ink);position:relative;cursor:pointer;flex:none;
+    border:none;
+  }
+  .switch::after{
+    content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;
+    background:#fff;transition:transform .2s ease;
+  }
+  .switch.on{background:var(--teal);}
+  .switch.on::after{transform:translateX(18px);}
+
+  .skill-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px;}
+  .skill-tag{
+    font-size:11px;font-family:'IBM Plex Mono',monospace;background:var(--paper);
+    border:1px solid var(--line);padding:4px 9px;border-radius:6px;color:var(--ink-soft);
+  }
+
+  .timeline-card{padding:8px 4px;}
+  .timeline-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 6px;}
+  .timeline-head h3{font-family:'Fraunces',serif;font-size:17px;margin:0;font-weight:600;}
+  .timeline-head .count{font-size:12px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;}
+
+  .timeline{padding:6px 20px 18px;position:relative;}
+  .timeline::before{
+    content:"";position:absolute;left:39px;top:8px;bottom:18px;width:1px;background:var(--line);
+  }
+  .t-item{display:flex;gap:16px;padding:14px 0;position:relative;}
+  .stamp{
+    flex:none;width:42px;height:42px;border-radius:50%;
+    background:var(--paper-alt);border:2px solid var(--gold);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Fraunces',serif;font-weight:700;font-size:15px;color:var(--gold);
+    position:relative;z-index:1;
+    opacity:0;transform:scale(0.4) rotate(-14deg);
+    animation:stampIn .5s cubic-bezier(.2,1.4,.4,1) forwards;
+  }
+  .t-item:nth-child(1) .stamp{animation-delay:.05s;}
+  .t-item:nth-child(2) .stamp{animation-delay:.18s;}
+  .t-item:nth-child(3) .stamp{animation-delay:.31s;}
+  .t-item:nth-child(4) .stamp{animation-delay:.44s;}
+  .t-item:nth-child(5) .stamp{animation-delay:.57s;}
+  @keyframes stampIn{
+    0%{opacity:0;transform:scale(0.4) rotate(-14deg);}
+    70%{opacity:1;transform:scale(1.12) rotate(2deg);}
+    100%{opacity:1;transform:scale(1) rotate(0);}
+  }
+  .t-body{flex:1;padding-top:2px;}
+  .t-body .t-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  .t-title{font-weight:600;font-size:14.5px;}
+  .t-date{font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;white-space:nowrap;}
+  .t-org{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+  .t-verify{
+    display:inline-flex;align-items:center;gap:5px;margin-top:8px;
+    font-size:10.5px;font-family:'IBM Plex Mono',monospace;color:var(--teal);
+    background:var(--teal-soft);padding:3px 8px;border-radius:5px;
+  }
+  .t-verify::before{content:"✓";font-weight:700;}
+
+  /* ===================== EMPLOYER VIEW ===================== */
+  .filters{
+    display:flex;flex-wrap:wrap;gap:10px;padding:18px;background:var(--paper-alt);
+    border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin-bottom:22px;
+  }
+  .filter-chip{
+    border:1px solid var(--line);background:var(--paper);padding:8px 14px;border-radius:8px;
+    font-size:12.5px;font-weight:600;color:var(--ink-soft);cursor:pointer;transition:all .15s ease;
+    font-family:'IBM Plex Sans',sans-serif;
+  }
+  .filter-chip.on{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+  .filter-search{
+    flex:1;min-width:180px;border:1px solid var(--line);border-radius:8px;padding:8px 14px;
+    font-size:13px;font-family:'IBM Plex Sans',sans-serif;color:var(--ink);background:var(--paper);
+  }
+  .filter-search:focus{outline:2px solid var(--teal);outline-offset:1px;}
+
+  .results-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;}
+  .results-head h3{font-family:'Fraunces',serif;font-size:16px;margin:0;font-weight:600;}
+  .results-head span{font-size:12px;font-family:'IBM Plex Mono',monospace;color:var(--ink-soft);}
+
+  .candidate-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+  .cand-card{
+    background:var(--paper-alt);border:1px solid var(--line);border-radius:14px;padding:18px;
+    box-shadow:var(--shadow);transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .cand-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(18,33,60,0.12);}
+  .cand-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+  .cand-avatar{
+    width:38px;height:38px;border-radius:50%;background:var(--ink);color:var(--gold-soft);
+    display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600;font-size:14px;
+  }
+  .match-score{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:var(--teal);
+    background:var(--teal-soft);padding:3px 8px;border-radius:6px;
+  }
+  .cand-card h4{font-size:14.5px;margin:12px 0 1px;font-weight:600;}
+  .cand-card .cand-role{font-size:12px;color:var(--ink-soft);margin-bottom:10px;}
+  .cand-skills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
+  .cand-skills .skill-tag{font-size:10.5px;}
+  .cand-foot{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:10px;}
+  .cand-foot .loc{font-size:11px;color:var(--ink-soft);}
+  .shortlist-btn{
+    border:1px solid var(--ink);background:transparent;color:var(--ink);
+    font-size:11.5px;font-weight:600;padding:6px 12px;border-radius:7px;cursor:pointer;
+    font-family:'IBM Plex Sans',sans-serif;transition:all .15s ease;
+  }
+  .shortlist-btn.added{background:var(--coral);border-color:var(--coral);color:#fff;}
+
+  /* ===================== UNIVERSITY VIEW ===================== */
+  .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:26px;}
+  .stat-card{
+    background:var(--paper-alt);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow);
+  }
+  .stat-card .num{font-family:'Fraunces',serif;font-size:32px;font-weight:600;color:var(--ink);line-height:1;}
+  .stat-card .lbl{font-size:12px;color:var(--ink-soft);margin-top:8px;}
+  .stat-card .delta{font-size:11px;color:var(--teal);font-family:'IBM Plex Mono',monospace;margin-top:6px;}
+
+  .uni-cols{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;}
+  @media (max-width:820px){.uni-cols{grid-template-columns:1fr;}}
+
+  .bar-card{padding:22px;}
+  .bar-card h3{font-family:'Fraunces',serif;font-size:16px;margin:0 0 18px;font-weight:600;}
+  .bar-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+  .bar-label{width:150px;font-size:12px;color:var(--ink-soft);flex:none;}
+  .bar-track{flex:1;height:10px;background:var(--paper);border-radius:6px;overflow:hidden;}
+  .bar-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--gold));border-radius:6px;width:0;transition:width 1s cubic-bezier(.2,.7,.2,1);}
+  .bar-pct{width:36px;text-align:right;font-size:11.5px;font-family:'IBM Plex Mono',monospace;color:var(--ink-soft);flex:none;}
+
+  .outcome-list{padding:22px;}
+  .outcome-list h3{font-family:'Fraunces',serif;font-size:16px;margin:0 0 16px;font-weight:600;}
+  .outcome-item{display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid var(--line);font-size:12.5px;}
+  .outcome-item:first-of-type{border-top:none;}
+  .outcome-item span:last-child{font-weight:600;color:var(--ink);}
+
+  footer{margin-top:50px;padding-top:20px;border-top:1px solid var(--line);
+    font-size:11.5px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;text-align:center;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="seal">SL</div>
+      <div class="brand-text">
+        <div class="name">SkillLink Rwanda</div>
+        <div class="tag">Verified Digital Skills Passport</div>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" data-view="student">Student</button>
+      <button class="tab-btn" data-view="employer">Employer</button>
+      <button class="tab-btn" data-view="university">University</button>
+    </div>
+  </div>
+
+  <!-- ============ STUDENT VIEW ============ -->
+  <section class="panel active" id="view-student">
+    <div class="view-head">
+      <div class="eyebrow">Student Passport</div>
+      <h1>What Divine can prove, not just what she studied</h1>
+      <p>Every verified achievement lands on the passport automatically — no self-reporting, no paper chase. Divine decides who gets to see it.</p>
+    </div>
+
+    <div class="student-grid">
+      <div class="card profile-card">
+        <div class="avatar">DU</div>
+        <h2>Divine Uwase</h2>
+        <div class="role">BSc Computer Science, Year 4 — UNILAK</div>
+
+        <div class="meta-row"><span>GPA</span><span>82.4%</span></div>
+        <div class="meta-row"><span>Verified records</span><span>12</span></div>
+        <div class="meta-row"><span>Internships</span><span>2</span></div>
+        <div class="meta-row"><span>Profile score</span><span>91/100</span></div>
+
+        <div class="skill-tags">
+          <span class="skill-tag">Python</span>
+          <span class="skill-tag">SQL</span>
+          <span class="skill-tag">UI Research</span>
+          <span class="skill-tag">Project Mgmt</span>
+          <span class="skill-tag">Kinyarwanda / EN / FR</span>
+        </div>
+
+        <div class="passport-toggle">
+          <div class="label"><b>Visible to employers</b>Recruiters can find and shortlist this profile</div>
+          <button class="switch on" id="visToggle" aria-label="Toggle employer visibility"></button>
+        </div>
+      </div>
+
+      <div class="card timeline-card">
+        <div class="timeline-head">
+          <h3>Verified Achievement Timeline</h3>
+          <span class="count">12 records</span>
+        </div>
+        <div class="timeline" id="timeline"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EMPLOYER VIEW ============ -->
+  <section class="panel" id="view-employer">
+    <div class="view-head">
+      <div class="eyebrow">Employer Search</div>
+      <h1>Search verified skills, not a stack of PDFs</h1>
+      <p>Filter by degree, certification, and demonstrated skill. Every match is backed by a university, supervisor, or certifying body — not a self-written CV.</p>
+    </div>
+
+    <div class="filters">
+      <input class="filter-search" placeholder="Search skill, e.g. &quot;data analysis&quot;" id="searchBox">
+      <button class="filter-chip on" data-f="all">All fields</button>
+      <button class="filter-chip" data-f="tech">Tech</button>
+      <button class="filter-chip" data-f="business">Business</button>
+      <button class="filter-chip" data-f="design">Design</button>
+      <button class="filter-chip" data-f="kigali">Kigali only</button>
+    </div>
+
+    <div class="results-head">
+      <h3>Matching candidates</h3>
+      <span id="resultCount">6 results</span>
+    </div>
+    <div class="candidate-grid" id="candidateGrid"></div>
+  </section>
+
+  <!-- ============ UNIVERSITY VIEW ============ -->
+  <section class="panel" id="view-university">
+    <div class="view-head">
+      <div class="eyebrow">University Dashboard</div>
+      <h1>UNILAK graduate outcomes, in real time</h1>
+      <p>Track employability, in-demand skills, and industry placement across cohorts — data that used to take an alumni survey now updates itself.</p>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-card"><div class="num">2,340</div><div class="lbl">Active student passports</div><div class="delta">↑ 18% vs last year</div></div>
+      <div class="stat-card"><div class="num">78%</div><div class="lbl">Graduates employed within 6 months</div><div class="delta">↑ 11pts vs 2024 cohort</div></div>
+      <div class="stat-card"><div class="num">146</div><div class="lbl">Employer accounts active</div><div class="delta">↑ 32 this term</div></div>
+      <div class="stat-card"><div class="num">4,910</div><div class="lbl">Verified records this term</div><div class="delta">↑ 6% MoM</div></div>
+    </div>
+
+    <div class="uni-cols">
+      <div class="card bar-card">
+        <h3>Most in-demand verified skills (this term)</h3>
+        <div id="barList"></div>
+      </div>
+      <div class="card outcome-list">
+        <h3>Where graduates are landing</h3>
+        <div class="outcome-item"><span>Bank of Kigali</span><span>14 hires</span></div>
+        <div class="outcome-item"><span>MTN Rwanda</span><span>11 hires</span></div>
+        <div class="outcome-item"><span>Zipline Rwanda</span><span>9 hires</span></div>
+        <div class="outcome-item"><span>Andela</span><span>7 hires</span></div>
+        <div class="outcome-item"><span>RSSB</span><span>6 hires</span></div>
+        <div class="outcome-item"><span>Self-employed / startup</span><span>15 grads</span></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>SKILLLINK RWANDA — PROTOTYPE BUILD · PITCH DAY, UNILAK · 24.07.2026</footer>
+</div>
+
+<script>
+// ---------- TAB SWITCHING ----------
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('view-'+btn.dataset.view).classList.add('active');
+    if(btn.dataset.view==='university'){ setTimeout(animateBars, 60); }
+  });
+});
+
+// ---------- STUDENT: visibility toggle ----------
+document.getElementById('visToggle').addEventListener('click', e=>{
+  e.target.classList.toggle('on');
+});
+
+// ---------- STUDENT: timeline data ----------
+const timelineData = [
+  {mark:"A", title:"Best Final Year Project — Smart Irrigation App", org:"UNILAK Innovation Fair", date:"Jun 2026"},
+  {mark:"C", title:"Data Analytics Certificate", org:"Andela Learning Community", date:"Apr 2026"},
+  {mark:"I", title:"Software Engineering Intern", org:"Bank of Kigali — 3 months, supervisor-rated 4.8/5", date:"Jan 2026"},
+  {mark:"L", title:"President, Computer Science Student Association", org:"UNILAK", date:"Sep 2025"},
+  {mark:"R", title:"Research Assistant — NLP for Kinyarwanda", org:"UNILAK Faculty of Sciences", date:"Jun 2025"},
+];
+const tl = document.getElementById('timeline');
+timelineData.forEach(item=>{
+  const el = document.createElement('div');
+  el.className='t-item';
+  el.innerHTML = `
+    <div class="stamp">${item.mark}</div>
+    <div class="t-body">
+      <div class="t-top"><span class="t-title">${item.title}</span><span class="t-date">${item.date}</span></div>
+      <div class="t-org">${item.org}</div>
+      <div class="t-verify">Verified record</div>
+    </div>`;
+  tl.appendChild(el);
+});
+
+// ---------- EMPLOYER: candidate data ----------
+const candidates = [
+  {name:"Divine Uwase", role:"BSc Computer Science, UNILAK", skills:["Python","SQL","UI Research"], score:96, loc:"Kigali", field:["tech","kigali"]},
+  {name:"Eric Niyonshuti", role:"BBA Finance, University of Rwanda", skills:["Financial Modeling","Excel","Audit"], score:91, loc:"Musanze", field:["business"]},
+  {name:"Aline Mukamana", role:"BA Graphic Design, ULK", skills:["Figma","Branding","Illustration"], score:89, loc:"Kigali", field:["design","kigali"]},
+  {name:"Jean Paul Habimana", role:"BSc Software Engineering, INES-Ruhengeri", skills:["JavaScript","React","APIs"], score:94, loc:"Musanze", field:["tech"]},
+  {name:"Clarisse Ingabire", role:"BSc Business IT, UNILAK", skills:["Data Analysis","Power BI","SQL"], score:88, loc:"Kigali", field:["tech","business","kigali"]},
+  {name:"Patrick Mugisha", role:"BA Marketing, University of Rwanda", skills:["Digital Marketing","Content","SEO"], score:85, loc:"Huye", field:["business"]},
+];
+const grid = document.getElementById('candidateGrid');
+const countEl = document.getElementById('resultCount');
+
+function initials(name){ return name.split(' ').map(w=>w[0]).slice(0,2).join(''); }
+
+function renderCandidates(list){
+  grid.innerHTML='';
+  list.forEach(c=>{
+    const card = document.createElement('div');
+    card.className='cand-card';
+    card.innerHTML = `
+      <div class="cand-top">
+        <div class="cand-avatar">${initials(c.name)}</div>
+        <div class="match-score">${c.score}% match</div>
+      </div>
+      <h4>${c.name}</h4>
+      <div class="cand-role">${c.role}</div>
+      <div class="cand-skills">${c.skills.map(s=>`<span class="skill-tag">${s}</span>`).join('')}</div>
+      <div class="cand-foot">
+        <span class="loc">${c.loc}</span>
+        <button class="shortlist-btn">Shortlist</button>
+      </div>`;
+    card.querySelector('.shortlist-btn').addEventListener('click', function(){
+      this.classList.toggle('added');
+      this.textContent = this.classList.contains('added') ? 'Shortlisted ✓' : 'Shortlist';
+    });
+    grid.appendChild(card);
+  });
+  countEl.textContent = list.length + ' result' + (list.length===1?'':'s');
+}
+
+let activeFilter='all';
+function applyFilters(){
+  const q = document.getElementById('searchBox').value.toLowerCase().trim();
+  let list = candidates.filter(c=>{
+    const matchesFilter = activeFilter==='all' || c.field.includes(activeFilter);
+    const matchesQuery = !q || c.name.toLowerCase().includes(q) || c.skills.join(' ').toLowerCase().includes(q) || c.role.toLowerCase().includes(q);
+    return matchesFilter && matchesQuery;
+  });
+  renderCandidates(list);
+}
+document.querySelectorAll('.filter-chip').forEach(chip=>{
+  chip.addEventListener('click',()=>{
+    document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('on'));
+    chip.classList.add('on');
+    activeFilter = chip.dataset.f;
+    applyFilters();
+  });
+});
+document.getElementById('searchBox').addEventListener('input', applyFilters);
+renderCandidates(candidates);
+
+// ---------- UNIVERSITY: bar chart ----------
+const skillBars = [
+  {label:"Data Analysis", pct:82},
+  {label:"Software Development", pct:76},
+  {label:"Digital Marketing", pct:61},
+  {label:"Financial Modeling", pct:54},
+  {label:"UI / UX Design", pct:48},
+];
+const barList = document.getElementById('barList');
+skillBars.forEach(b=>{
+  const row=document.createElement('div');
+  row.className='bar-row';
+  row.innerHTML = `<div class="bar-label">${b.label}</div>
+    <div class="bar-track"><div class="bar-fill" data-pct="${b.pct}"></div></div>
+    <div class="bar-pct">${b.pct}%</div>`;
+  barList.appendChild(row);
+});
+function animateBars(){
+  document.querySelectorAll('.bar-fill').forEach(f=>{
+    f.style.width = f.dataset.pct + '%';
+  });
+}
+</script>
+</body>
+</html>
